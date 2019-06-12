@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Academic</title>
+    <title>Jianchao Li</title>
     <link>https://jianchao-li.github.io/authors/admin/</link>
-    <description>Recent content on Academic</description>
+    <description>Recent content on Jianchao Li</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
+    <copyright>&amp;copy; {year}</copyright>
     
 	    <atom:link href="https://jianchao-li.github.io/authors/admin/index.xml" rel="self" type="application/rss+xml" />
     
@@ -16,9 +17,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://jianchao-li.github.io/authors/admin/</guid>
-      <description>&lt;p&gt;Nelson Bighetti is a professor of artificial intelligence at the Stanford AI Lab. His research interests include distributed robotics, mobile computing and programmable matter. He leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.&lt;/p&gt;
-
-&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate.&lt;/p&gt;
+      <description>&lt;p&gt;Jianchao Li is a generalist software engineer. His interests include computer vision, deep learning and software engineering. He is honored to have been working as a software engineer and a site reliablity engineer at Indeed - the world&amp;rsquo;s #1 job site in Tokyo, Japan and as an algorithm engineer at ByteDance AI Lab in Beijing, China.&lt;/p&gt;
 </description>
     </item>
     
