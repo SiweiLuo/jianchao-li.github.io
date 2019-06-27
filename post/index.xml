@@ -1893,12 +1893,15 @@ def compose_fp_list(fp_list):
 
 &lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We cover fully convolutional networks in great detail. To summarize, we have learend:
-* Semantic segmentation requires dense pixel-level classification while image classification is only in image-level.
-* Fully convolutional networks (FCNs) are a general framework to solve semantic segmentation.
-* The key to generate outputs with the same size as the input in FCNs is to use deconvolution layers, which are just convolutional layers with input and output swapped.
-* The offset parameter in the Crop layers of FCNs can be computed by breaking down the network layer by layer or using an analytic equation.
-* Outputs with higher resolutions from intermediate layers of the network can be incorporated to enhance the details in the segmentation results.&lt;/p&gt;
+&lt;p&gt;We cover fully convolutional networks in great detail. To summarize, we have learend:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Semantic segmentation requires dense pixel-level classification while image classification is only in image-level.&lt;/li&gt;
+&lt;li&gt;Fully convolutional networks (FCNs) are a general framework to solve semantic segmentation.&lt;/li&gt;
+&lt;li&gt;The key to generate outputs with the same size as the input in FCNs is to use deconvolution layers, which are just convolutional layers with input and output swapped.&lt;/li&gt;
+&lt;li&gt;The offset parameter in the Crop layers of FCNs can be computed by breaking down the network layer by layer or using an analytic equation.&lt;/li&gt;
+&lt;li&gt;Outputs with higher resolutions from intermediate layers of the network can be incorporated to enhance the details in the segmentation results.&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
