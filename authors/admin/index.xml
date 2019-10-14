@@ -11,15 +11,5 @@
 	    <atom:link href="https://jianchao-li.github.io/authors/admin/index.xml" rel="self" type="application/rss+xml" />
     
     
-    <item>
-      <title></title>
-      <link>https://jianchao-li.github.io/authors/admin/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://jianchao-li.github.io/authors/admin/</guid>
-      <description>&lt;p&gt;Jianchao Li is a generalist software engineer. His interests include computer vision, deep learning and software engineering. He is honored to have been working as a software engineer and a site reliablity engineer at Indeed - the world&amp;rsquo;s #1 job site in Tokyo, Japan and as an algorithm engineer at ByteDance AI Lab in Beijing, China.&lt;/p&gt;
-</description>
-    </item>
-    
   </channel>
 </rss>
