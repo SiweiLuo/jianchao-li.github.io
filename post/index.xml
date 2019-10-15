@@ -7,10 +7,111 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>&amp;copy; {year}</copyright>
-    <lastBuildDate>Tue, 27 Nov 2018 15:36:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Oct 2019 01:00:18 +0800</lastBuildDate>
     
 	    <atom:link href="https://jianchao-li.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>From PyTorch to Core ML</title>
+      <link>https://jianchao-li.github.io/post/from-pytorch-to-coreml/</link>
+      <pubDate>Wed, 16 Oct 2019 01:00:18 +0800</pubDate>
+      
+      <guid>https://jianchao-li.github.io/post/from-pytorch-to-coreml/</guid>
+      <description>
+
+&lt;p&gt;After working with PyTorch in my daily work for some time, recently I got a chance to work on something completely new - &lt;a href=&#34;https://developer.apple.com/documentation/coreml&#34; target=&#34;_blank&#34;&gt;Core ML&lt;/a&gt;. After converting a PyTorch model to the Core ML format and seeing it work in an iPhone 7, I believe this deserves a blog post.&lt;/p&gt;
+
+&lt;h2 id=&#34;what-is-core-ml&#34;&gt;What is Core ML?&lt;/h2&gt;
+
+&lt;p&gt;Core ML is a framework developed by Apple to integrate machine learning models into iOS applications. As like each other framework, Core ML has its own model format (&lt;code&gt;.mlmodel&lt;/code&gt;), like &lt;code&gt;.pth&lt;/code&gt; of PyTorch or &lt;code&gt;.params&lt;/code&gt; of MXNet.&lt;/p&gt;
+
+&lt;p&gt;Compared to PyTorch or MXNet, Core ML is mainly used as an inference engine in iOS. That means you will first train a model using PyTorch (&lt;code&gt;.pth&lt;/code&gt;) or MXNet (&lt;code&gt;.params&lt;/code&gt;) and then convert it to the Core ML format (&lt;code&gt;.mlmodel&lt;/code&gt;) and deploy it to an iOS app.&lt;/p&gt;
+
+&lt;h2 id=&#34;get-a-sense-first&#34;&gt;Get a Sense First&lt;/h2&gt;
+
+&lt;p&gt;Before diving into details, it is better to get a sense of what a Core ML model looks like. You may download the sample code in &lt;a href=&#34;https://developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml&#34; target=&#34;_blank&#34;&gt;Classifying Images with Vision and Core ML&lt;/a&gt;. There is a &lt;code&gt;MobileNet.mlmodel&lt;/code&gt; inside it. You can open it with Xcode to see what it looks like.&lt;/p&gt;
+
+&lt;p&gt;The following is a screenshot of the model details. In the center area, there are 3 sections: Machine Learning Model, Model Class and Prediction.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;model_details.png&#34;/&gt;&lt;/div&gt;
+
+&lt;p&gt;The interesting part is the Prediction. It tells us that the input to the model is a color (RGB) image of size 224 x 224 and the outputs have two parts: top-1 category &lt;code&gt;classLabel&lt;/code&gt; and the probabilities of all categories &lt;code&gt;classLabelProbs&lt;/code&gt;. &lt;strong&gt;This will guide the model conversion later&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Then ou can click the triangle in the following red rectangle to build the project. You can also select the device simulator that you want to run the project on in the blue rectangle.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;xcode.png&#34;/&gt;&lt;/div&gt;
+
+&lt;p&gt;You may need to configure the &amp;ldquo;Signing &amp;amp; Capabilities&amp;rdquo; by clicking the &lt;code&gt;Vision+ML Example&lt;/code&gt; folder (an Apple ID will be needed). After that, you should see an iPhone coming out in your screen and you can start to add a photo and play with it! If you want to try it on a real iPhone, just connect your iPhone to the computer (USB or Type-C) then you should be able to select your iPhone in the blue rectangle.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;iphone.png&#34; width=&#34;30%&#34;/&gt;&lt;/div&gt;
+
+&lt;p&gt;You can try more open source Core ML models &lt;a href=&#34;https://developer.apple.com/machine-learning/models/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;. To add a model to the project, you need to drag it to the project structure and set it up as follows. Some files will be generated automatically for you to use the model.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;drag.png&#34;/&gt;&lt;/div&gt;
+
+&lt;p&gt;You need to change the line &lt;code&gt;let model = try VNCoreMLModel(for: MobileNet().model)&lt;/code&gt; in &lt;code&gt;ImageClassificationViewController.swift&lt;/code&gt; to use the model. You may also need to update the target iOS version shown in the red rectangle of the following screenshot.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;ios_version.png&#34;/&gt;&lt;/div&gt;
+
+&lt;h2 id=&#34;model-conversion&#34;&gt;Model Conversion&lt;/h2&gt;
+
+&lt;p&gt;Now we take a step back. We have just trained a model using PyTorch or MXNet and we wwant to run it on iOS. Obviously, we need to convert the &lt;code&gt;.pth&lt;/code&gt; or &lt;code&gt;.params&lt;/code&gt; to &lt;code&gt;.mlmodel&lt;/code&gt;. This is model conversion.&lt;/p&gt;
+
+&lt;p&gt;For Caffe and Keras, their models can be converted to Core ML models directly. However, such direct conversion is not supported for PyTorch. Fortunately, we have &lt;a href=&#34;https://onnx.ai/&#34; target=&#34;_blank&#34;&gt;ONNX&lt;/a&gt;, an excellent exchange format between models of various frameworks.&lt;/p&gt;
+
+&lt;p&gt;The conversion flow from PyTorch to Core ML is as follows. I will use the &lt;code&gt;mobilenet_v2&lt;/code&gt; of &lt;code&gt;torchvision&lt;/code&gt; as an example to walk through the conversion process.&lt;/p&gt;
+
+&lt;div style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;conversion.png&#34;/&gt;&lt;/div&gt;
+
+&lt;h3 id=&#34;loading-torchvision-model&#34;&gt;Loading TorchVision Model&lt;/h3&gt;
+
+&lt;p&gt;First I load a MobileNet v2 pretrained on ImageNet. Note that I add a Softmax layer to get the probabilities of all categories (remember by the output &lt;code&gt;classLabelProbs&lt;/code&gt; of the Core ML model?).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import torch
+import torch.nn as nn
+import torchvision
+
+model = torchvision.models.mobilenet_v2(pretrained=True)
+# torchvision models do not have softmax outputs
+model = nn.Sequential(model, nn.Softmax())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;pytorch-to-onnx&#34;&gt;PyTorch to ONNX&lt;/h3&gt;
+
+&lt;p&gt;Then I convert the above PyTorch model to onnx (&lt;code&gt;model.onnx&lt;/code&gt;). Note that the &lt;code&gt;input_names&lt;/code&gt; and &lt;code&gt;output_names&lt;/code&gt; are consistent with the above Core ML model.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;dummy_input = torch.randn(1, 3, 224, 224)
+torch.onnx.export(model, dummy_input, &#39;mobilenet_v2.onnx&#39;, verbose=True,
+                  input_names=[&#39;image&#39;], output_names=[&#39;classLabelProbs&#39;])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;onnx-to-core-ml&#34;&gt;ONNX to Core ML&lt;/h3&gt;
+
+&lt;p&gt;Finally, convert the ONNX model to a Core ML model (&lt;code&gt;mobilenet_v2.mlmodel&lt;/code&gt;). In this process, the class labels of ImageNet is required, which can be dowloaded to &lt;code&gt;imagenet_class_index.json&lt;/code&gt; from &lt;a href=&#34;https://s3.amazonaws.com/deep-learning-models/image-models/imagenet_class_index.json&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;. The &lt;code&gt;image_input_names=[&#39;image&#39;]&lt;/code&gt; means we treat the &lt;code&gt;image&lt;/code&gt; (input of the onnx model) as an image (remember the input &lt;code&gt;image&lt;/code&gt; of the above Core ML model?). &lt;code&gt;predicted_feature_name=&#39;classLabel&#39;&lt;/code&gt; will generate the other output of the above Core ML model.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import json
+import requests
+from onnx_coreml import convert
+
+IMAGENET_CLASS_INDEX_URL = &#39;https://s3.amazonaws.com/deep-learning-models/image-models/imagenet_class_index.json&#39;
+
+def load_imagenet_class_labels():
+    response = requests.get(IMAGENET_CLASS_INDEX_URL)
+    index_json = response.json()
+    class_labels = [index_json[str(i)][1] for i in range(1000)]
+    return class_labels
+
+model_onnx = onnx.load(&#39;mobilenet_v2.onnx&#39;)
+class_labels = load_imagenet_class_labels()
+model_coreml = convert(model_onnx, mode=&#39;classifier&#39;, image_input_names=[&#39;image&#39;],
+	               class_labels=class_labels, predicted_feature_name=&#39;classLabel&#39;)
+model_coreml.save(&#39;mobilenet_v2.mlmodel&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you can drag the &lt;code&gt;mobilenet_v2.mlmodel&lt;/code&gt; to your project and play with it. Have fun!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Connecting Computer Vision and Natural Language</title>
